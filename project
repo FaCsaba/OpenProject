@@ -1,0 +1,48 @@
+#!/bin/bash
+place=$HOME/projects/
+args="false"
+
+
+makeProject ()
+{
+            createproject=$(printf "yes\nno" |dmenu -p "Would you like to create a new project? ");
+                if [[ $createproject == "yes" ]]
+                    then newproject $1
+                    else exit 0
+                fi
+}
+
+
+
+
+
+while getopts '*fn' flag; do
+  case "${flag}" in
+    f)  if [[ -n "$2" ]] && [[ -d "$place$2" ]]
+            then xdg-open $place$2 
+                exit 0
+            else xdg-open $place$(ls $HOME/projects/ | dmenu -p "What project to open in a folder? ")/
+                exit 0
+        fi;;
+    n)  makeProject $2;;
+    *) printf "You have the following options:\n-f : opens the folder the project is in\n-n : makes a new project with the projectname if specified\n";;
+  esac
+  args="true"
+done
+
+
+
+
+if [[ $args == "false" ]]
+then
+    if [[ -n "$1" ]]
+        then folder=$1
+        else folder=$(ls $HOME/projects/ | dmenu -p "What project to open?")
+    fi
+
+    if [[ -d "$place$folder" ]]
+        then code $place$folder
+        else makeProject $folder
+    fi
+fi
+
